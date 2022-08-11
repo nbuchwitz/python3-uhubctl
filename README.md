@@ -44,3 +44,12 @@ port.status = True
 print("Get port 1-1.1 status")
 print(port.status)
 ```
+
+# FAQ
+
+### How can I specify the path to ´uhubctl´
+
+```python
+uhubctl.discover_hubs(uhubctl_binary="sudo /usr/local/bin/uhubctl")
+uhubctl.Hub("1-1", uhubctl_binary="sudo /usr/local/bin/uhubctl")
+```
