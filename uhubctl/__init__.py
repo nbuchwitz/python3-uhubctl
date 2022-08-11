@@ -1,22 +1,34 @@
-import os
 import re
+import subprocess
+
+UHUBCTL_BINARY = "uhubctl"
 
 
-def discover_hubs(uhubctl_binary: str = "uhubctl"):
-    cmd = f"{uhubctl_binary}"
-    stream = os.popen(cmd)
+def __uhubctl(args: list = []) -> list:
+    cmd = UHUBCTL_BINARY.split(" ") + args
+    result = subprocess.run(cmd, capture_output=True)
+    stdout = result.stdout.decode()
 
+    if result.returncode != 0:
+        stderr = result.stderr.decode()
+
+        raise Exception(f"uhubctl failed: {stderr}")
+
+    return stdout.split('\n')
+
+
+def discover_hubs():
     hubs = []
 
     pattern_hub = re.compile("Current status for hub ([\.\d-]+)")
     pattern_port = re.compile("  Port (\d+): \d{4} (power|off)")
 
-    for line in stream.readlines():
+    for line in __uhubctl():
         reg_hub = pattern_hub.match(line)
         reg_port = pattern_port.match(line)
 
         if reg_hub:
-            hub = Hub(reg_hub.group(1), uhubctl_binary)
+            hub = Hub(reg_hub.group(1))
             hubs.append(hub)
         elif reg_port:
             # assume that the port is the last detected one
@@ -32,10 +44,9 @@ def discover_hubs(uhubctl_binary: str = "uhubctl"):
 
 
 class Hub:
-    def __init__(self, path: str, uhubctl_binary: str = "uhubctl") -> None:
+    def __init__(self, path: str) -> None:
         self.path = path
         self.ports = []
-        self.uhubctl = uhubctl_binary
 
     def add_port(self, port_number: int) -> 'Port':
         port = Port(self, port_number)
@@ -61,10 +72,8 @@ class Port:
         status = None
         pattern = re.compile(f"  Port {self.port_number}: \d{{4}} (power|off)")
 
-        cmd = f"{self.hub.uhubctl} -l {self.hub.path} -p {self.port_number}"
-        stream = os.popen(cmd)
-
-        for line in stream.readlines():
+        args = ["-l", self.hub.path, "-p", self.port_number]
+        for line in __uhubctl(args):
             reg = pattern.match(line)
 
             if reg:
@@ -77,14 +86,14 @@ class Port:
 
     @status.setter
     def status(self, status: bool) -> None:
-        cmd = f"{self.hub.uhubctl} -l {self.hub.path} -p {self.port_number} -a "
-        if status:
-            cmd += "on"
-        else:
-            cmd += "off"
+        args = ["-l", self.hub.path, "-p", self.port_number, "-a"]
 
-        stream = os.popen(cmd)
-        stream.readlines()
+        if status:
+            args.append("on")
+        else:
+            args.append("off")
+
+        __uhubctl(args)
 
     def __str__(self) -> str:
         return f"USB Port {self.hub.path}.{self.port_number}"

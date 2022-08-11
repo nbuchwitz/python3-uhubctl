@@ -50,6 +50,7 @@ print(port.status)
 ### How can I specify the path to ´uhubctl´
 
 ```python
-uhubctl.discover_hubs(uhubctl_binary="sudo /usr/local/bin/uhubctl")
-uhubctl.Hub("1-1", uhubctl_binary="sudo /usr/local/bin/uhubctl")
+import uhubctl
+
+uhubctl.UHUBCTL_BINARY = "sudo /usr/local/bin/uhubctl"
 ```
