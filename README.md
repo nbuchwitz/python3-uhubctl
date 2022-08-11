@@ -6,7 +6,7 @@ This is a simple Python wrapper for [uhubctl](https://github.com/mvp/uhubctl)
 
 ## Discover all usable USB hubs
 
-'''python
+```python
 import uhubctl
 
 hubs = uhubctl.discover_hubs()
@@ -16,20 +16,20 @@ for hub in hubs:
 
     for port in hub.ports:
         print(f"   Found port: {port}")
-'''
+```
 
 ## Manually specify hub and port
 
-'''python
+```python
 from uhubctl import Hub, Port
 
 hub = Hub("1-1")
 hub.add_port(1)
-'''
+```
 
 ## Control ports
 
-'''python
+```python
 from uhubctl import Hub, Port
 
 hub = Hub("1-1")
@@ -43,4 +43,4 @@ port.status = True
 
 print("Get port 1-1.1 status")
 print(port.status)
-'''
+```
