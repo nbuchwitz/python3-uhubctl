@@ -134,7 +134,7 @@ class Port:
         status = None
         pattern = re.compile(f"  Port {self.port_number}: \d{{4}} (power|off)")
 
-        args = ["-l", self.hub.path, "-p", self.port_number]
+        args = ["-l", self.hub.path, "-p", str(self.port_number)]
         for line in _uhubctl(args):
             reg = pattern.match(line)
 
@@ -148,7 +148,7 @@ class Port:
 
     @status.setter
     def status(self, status: bool) -> None:
-        args = ["-l", self.hub.path, "-p", self.port_number, "-a"]
+        args = ["-l", self.hub.path, "-p", str(self.port_number), "-a"]
 
         if status:
             args.append("on")
