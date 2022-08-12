@@ -18,6 +18,21 @@ for hub in hubs:
         print(f"   Found port: {port}")
 ```
 
+## Create hub and enumerate attached ports
+```python
+import uhubctl
+
+hub = Hub("1-1", enumerate=True)
+
+# Iterate all ports
+for port in hub.ports:
+    print(f"Found port: {port}")
+
+# Get port by port number
+port_2 = hub.find_port(2)
+print(f"The status of port 2 is {port_2.status}")
+```
+
 ## Manually specify hub and port
 
 ```python
