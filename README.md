@@ -67,5 +67,5 @@ print(port.status)
 ```python
 import uhubctl
 
-uhubctl.UHUBCTL_BINARY = "sudo /usr/local/bin/uhubctl"
+uhubctl.utils.UHUBCTL_BINARY = "sudo /usr/local/bin/uhubctl"
 ```
