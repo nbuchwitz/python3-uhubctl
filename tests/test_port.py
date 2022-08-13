@@ -1,3 +1,4 @@
+from random import randint
 import pytest
 import pytest_subprocess
 
@@ -6,14 +7,37 @@ from helper import mock_hub, MockHub
 from uhubctl import Hub, Port
 
 
-def test_manual_port_creation():
-    port_number = 1
-    hub_path = "1"
+@pytest.fixture
+def demo_hub():
+    return Hub("1", enumerate_ports=False)
 
-    hub = Hub(hub_path, enumerate_ports=False)
-    port = Port(hub, port_number)
+
+@pytest.mark.parametrize("port_number", [randint(1, 20)])
+def test_str(demo_hub: Hub, port_number: int):
+    port = Port(demo_hub, port_number)
+
+    assert str(port) == f"USB Port {demo_hub.path}.{port_number}"
+
+
+@pytest.mark.parametrize("port_number", [randint(1, 20)])
+def test_manual_port_creation(demo_hub: Hub, port_number: int):
+    port = Port(demo_hub, port_number)
 
     assert port.port_number == port_number
+
+
+def test_wrong_or_missing_parameter(demo_hub: Hub):
+    with pytest.raises(TypeError):
+        Port()
+
+    with pytest.raises(TypeError):
+        Port(demo_hub)
+
+    port = Port(demo_hub, "1")
+    assert port.port_number == 1
+
+    with pytest.raises(ValueError):
+        Port(demo_hub, "a")
 
 
 def test_port_status(mock_hub: MockHub, fp: pytest_subprocess.FakeProcess):
