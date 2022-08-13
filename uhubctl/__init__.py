@@ -5,8 +5,12 @@ from typing import List, Optional
 UHUBCTL_BINARY = "uhubctl"
 
 
-def _uhubctl(args: list = []) -> list:
-    cmd = UHUBCTL_BINARY.split(" ") + args
+def _uhubctl(args: list = None) -> list:
+    cmd = UHUBCTL_BINARY.split(" ")
+
+    if args is not None:
+        cmd += args
+
     result = subprocess.run(cmd, capture_output=True)
     stdout = result.stdout.decode()
 
