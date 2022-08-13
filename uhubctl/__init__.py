@@ -35,7 +35,7 @@ def discover_hubs():
     """
     hubs = []
 
-    pattern = re.compile("Current status for hub ([\.\d-]+)")
+    pattern = re.compile(r"Current status for hub ([\.\d-]+)")
 
     for line in _uhubctl():
         regex = pattern.match(line)
@@ -110,7 +110,7 @@ class Hub:
         """
         Discover ports for this hub instance
         """
-        pattern = re.compile("  Port (\d+): \d{4} (power|off)")
+        pattern = re.compile(r"  Port (\d+): \d{4} (power|off)")
 
         for line in _uhubctl(["-l", self.path]):
             regex = pattern.match(line)
