@@ -22,7 +22,7 @@ for hub in hubs:
 ```python
 import uhubctl
 
-hub = Hub("1-1", enumerate=True)
+hub = Hub("1-1", enumerate_ports=True)
 
 # Iterate all ports
 for port in hub.ports:

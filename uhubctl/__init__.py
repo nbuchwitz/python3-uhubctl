@@ -41,25 +41,25 @@ def discover_hubs():
         regex = pattern.match(line)
 
         if regex:
-            hub = Hub(regex.group(1), enumerate=True)
+            hub = Hub(regex.group(1), enumerate_ports=True)
             hubs.append(hub)
 
     return hubs
 
 
 class Hub:
-    def __init__(self, path: str, enumerate: bool = False) -> None:
+    def __init__(self, path: str, enumerate_ports: bool = False) -> None:
         """
         Create new hub instance
 
         Arguments:
             path: USB hub path identifier
-            enumerate: Automatically enumerate ports
+            enumerate_ports: Automatically enumerate ports
         """
         self.path: str = path
         self.ports: List[Port] = []
 
-        if enumerate:
+        if enumerate_ports:
             self.discover_ports()
 
     def add_port(self, port_number: int) -> 'Port':
