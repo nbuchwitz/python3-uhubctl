@@ -62,15 +62,15 @@ class Hub:
 
         return port
 
-    def add_ports(self, port_start: int, port_end: int):
+    def add_ports(self, first_port: int, last_port: int):
         """
         Add multiple ports to hub
 
         Arguments:
-            port_start: First port's indentification number
-            port_end: Last port's ndentification number
+            first_port: First port's indentification number
+            last_port: Last port's ndentification number
         """
-        for port_number in range(port_start, port_end):
+        for port_number in range(first_port, last_port+1):
             self.add_port(port_number)
 
     def find_port(self, port_number: int) -> Optional['Port']:
