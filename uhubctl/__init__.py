@@ -11,15 +11,18 @@ def _uhubctl(args: list = None) -> list:
     if args is not None:
         cmd += args
 
-    result = subprocess.run(cmd, capture_output=True)
-    stdout = result.stdout.decode()
+    try:
+        result = subprocess.run(cmd, capture_output=True, check=True)
+        stdout = result.stdout.decode()
 
-    if result.returncode != 0:
-        stderr = result.stderr.decode()
+        return stdout.split('\n')
+    except subprocess.CalledProcessError as exc:
+        stderr = exc.stderr.decode()
 
-        raise Exception(f"uhubctl failed: {stderr}")
-
-    return stdout.split('\n')
+        if stderr.startswith("No compatible devices detected"):
+            return []
+        
+        raise Exception(f"uhubctl failed: {stderr}") from exc
 
 
 def discover_hubs():
