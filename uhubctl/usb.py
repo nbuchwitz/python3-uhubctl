@@ -40,7 +40,7 @@ class Hub:
             path: USB hub path identifier
             enumerate_ports: Automatically enumerate ports
         """
-        self.path: str = path
+        self.path: str = str(path)
         self.ports: List[Port] = []
 
         if enumerate_ports:
