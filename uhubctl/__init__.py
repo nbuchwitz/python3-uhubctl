@@ -139,7 +139,7 @@ class Port:
     @property
     def status(self) -> bool:
         status = None
-        pattern = re.compile(f"  Port {self.port_number}: \d{{4}} (power|off)")
+        pattern = re.compile(fr"  Port {self.port_number}: \d{{4}} (power|off)")
 
         args = ["-l", self.hub.path, "-p", str(self.port_number)]
         for line in _uhubctl(args):
