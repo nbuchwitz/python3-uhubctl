@@ -20,8 +20,8 @@ def test_wrong_or_missing_parameter():
     with pytest.raises(TypeError):
         Hub()
 
-    with pytest.raises(TypeError):
-        Hub(1)
+    hub = Hub(1)
+    assert hub.path == "1"
 
 
 def test_multiple_manual_ports():
