@@ -1,3 +1,5 @@
+"""Wrapper module for uhubctl"""
+
 import re
 import subprocess
 from typing import List, Optional
@@ -21,7 +23,7 @@ def _uhubctl(args: list = None) -> list:
 
         if stderr.startswith("No compatible devices detected"):
             return []
-        
+
         raise Exception(f"uhubctl failed: {stderr}") from exc
 
 
@@ -48,6 +50,9 @@ def discover_hubs():
 
 
 class Hub:
+    """
+    USB hub representation from uhubctl
+    """
     def __init__(self, path: str, enumerate_ports: bool = False) -> None:
         """
         Create new hub instance
@@ -124,6 +129,9 @@ class Hub:
 
 
 class Port:
+    """
+    USB port representation from uhubctl
+    """
     def __init__(self, hub: Hub, port_number: int):
         """
         Create new port instance
@@ -138,6 +146,9 @@ class Port:
 
     @property
     def status(self) -> bool:
+        """
+        Port power status
+        """
         status = None
         pattern = re.compile(fr"  Port {self.port_number}: \d{{4}} (power|off)")
 
