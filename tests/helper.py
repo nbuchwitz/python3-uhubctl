@@ -8,9 +8,9 @@ currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 
-from uhubctl import *
+import uhubctl
 
-class MockHub(Hub):
+class MockHub(uhubctl.Hub):
     def __init__(self, path: str, num_ports: int = 5) -> None:
         self.path = path
         self.num_ports = num_ports
@@ -30,7 +30,8 @@ class MockHub(Hub):
             if port_filter is not None and idx+1 != int(port_filter):
                 continue
 
-            stdout.append(f"  Port {idx+1}: 0100 {self.__power_status(idx)}".encode())
+            stdout.append(
+                f"  Port {idx+1}: 0100 {self.__power_status(idx)}".encode())
 
         return stdout
 
@@ -53,7 +54,7 @@ class MockHub(Hub):
         stdout = self.__stdout(port_filter=port_number)
 
         if port_number is not None:
-            cmd += [ "-p", str(port_number)]
+            cmd += ["-p", str(port_number)]
 
         if new_status is not None:
             self.status[port_number] = new_status
@@ -65,6 +66,7 @@ class MockHub(Hub):
             stdout += self.__stdout("New", port_filter=port_number)
 
         fp.register(cmd, stdout=stdout)
+
 
 @pytest.fixture
 def mock_hub():
