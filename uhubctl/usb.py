@@ -94,7 +94,7 @@ class Hub:
         """
         Discover ports for this hub instance
         """
-        pattern = re.compile(r"  Port (\d+): \d{4} (power|off)")
+        pattern = re.compile(r"  Port (\d+): \d{4} ")
 
         for line in _uhubctl(["-l", self.path]):
             regex = pattern.match(line)
@@ -131,7 +131,7 @@ class Port:
         """
         status = None
         pattern = re.compile(
-            fr"  Port {self.port_number}: \d{{4}} (power|off)")
+            fr"  Port {self.port_number}: \d{{4}} (power|off|indicator)")
 
         args = ["-l", self.hub.path, "-p", str(self.port_number)]
         for line in _uhubctl(args):
