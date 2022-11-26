@@ -10,6 +10,7 @@ sys.path.append(parentdir)
 
 import uhubctl
 
+
 class MockHub(uhubctl.Hub):
     def __init__(self, path: str, num_ports: int = 5) -> None:
         self.path = path
@@ -24,14 +25,14 @@ class MockHub(uhubctl.Hub):
 
     def __stdout(self, prefix: str = "Current", port_filter: int = None):
         stdout = [
-            f"{prefix} status for hub {self.path} [0424:9512, USB 2.00, {self.num_ports} ports, ppps]".encode()]
+            f"{prefix} status for hub {self.path} [0424:9512, USB 2.00, {self.num_ports} ports, ppps]".encode()
+        ]
 
         for idx in range(self.num_ports):
-            if port_filter is not None and idx+1 != int(port_filter):
+            if port_filter is not None and idx + 1 != int(port_filter):
                 continue
 
-            stdout.append(
-                f"  Port {idx+1}: 0100 {self.__power_status(idx)}".encode())
+            stdout.append(f"  Port {idx+1}: 0100 {self.__power_status(idx)}".encode())
 
         return stdout
 
@@ -46,7 +47,12 @@ class MockHub(uhubctl.Hub):
 
         return self.__status(self.status[port_number])
 
-    def cmd(self, fp: pytest_subprocess.FakeProcess, port_number: int = None, new_status: bool = None) -> None:
+    def cmd(
+        self,
+        fp: pytest_subprocess.FakeProcess,
+        port_number: int = None,
+        new_status: bool = None,
+    ) -> None:
         if port_number is not None:
             assert port_number <= self.num_ports
 

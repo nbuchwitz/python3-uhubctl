@@ -6,7 +6,7 @@ UHUBCTL_BINARY = "uhubctl"
 
 def _uhubctl(args: list = None) -> list:
     cmd = UHUBCTL_BINARY.split(" ")
-    cmd.append('-N')
+    cmd.append("-N")
 
     if args is not None:
         cmd += args
@@ -15,7 +15,7 @@ def _uhubctl(args: list = None) -> list:
         result = subprocess.run(cmd, capture_output=True, check=True)
         stdout = result.stdout.decode()
 
-        return stdout.split('\n')
+        return stdout.split("\n")
     except subprocess.CalledProcessError as exc:
         stderr = exc.stderr.decode()
 
