@@ -5,7 +5,7 @@ from typing import List, Optional
 from .utils import _uhubctl
 
 
-def discover_hubs() -> List['Hub']:
+def discover_hubs() -> List["Hub"]:
     """
     Return list of all by uhubctl supported USB hubs with their ports
 
@@ -46,7 +46,7 @@ class Hub:
         if enumerate_ports:
             self.discover_ports()
 
-    def add_port(self, port_number: int) -> 'Port':
+    def add_port(self, port_number: int) -> "Port":
         """
         Add port to hub by port number
 
@@ -70,10 +70,10 @@ class Hub:
             first_port: First port's indentification number
             last_port: Last port's ndentification number
         """
-        for port_number in range(first_port, last_port+1):
+        for port_number in range(first_port, last_port + 1):
             self.add_port(port_number)
 
-    def find_port(self, port_number: int) -> Optional['Port']:
+    def find_port(self, port_number: int) -> Optional["Port"]:
         """
         Find port by port number
 
@@ -131,14 +131,15 @@ class Port:
         """
         status = None
         pattern = re.compile(
-            fr"  Port {self.port_number}: \d{{4}} (power|off|indicator)")
+            rf"  Port {self.port_number}: \d{{4}} (power|off|indicator)"
+        )
 
         args = ["-l", self.hub.path, "-p", str(self.port_number)]
         for line in _uhubctl(args):
             reg = pattern.match(line)
 
             if reg:
-                status = (reg.group(1) == "power")
+                status = reg.group(1) == "power"
 
         if status is None:
             raise Exception()

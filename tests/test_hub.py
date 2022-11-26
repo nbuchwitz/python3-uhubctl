@@ -52,8 +52,7 @@ def test_port_enumeration(mock_hub: MockHub, fp: pytest_subprocess.FakeProcess):
 
 
 def test_no_devices(fp: pytest_subprocess.FakeProcess):
-    fp.register(["uhubctl", "-N"],
-                stdout=["No compatible devices detected!".encode()])
+    fp.register(["uhubctl", "-N"], stdout=["No compatible devices detected!".encode()])
 
     hubs = uhubctl.discover_hubs()
 
