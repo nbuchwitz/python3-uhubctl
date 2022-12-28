@@ -130,9 +130,7 @@ class Port:
         Port power status
         """
         status = None
-        pattern = re.compile(
-            rf"  Port {self.port_number}: \d{{4}} (power|off|indicator)"
-        )
+        pattern = re.compile(rf"  Port {self.port_number}: \d{{4}} (power|off|indicator)")
 
         args = ["-l", self.hub.path, "-p", str(self.port_number)]
         for line in _uhubctl(args):
