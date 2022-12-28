@@ -24,9 +24,7 @@ class MockHub(uhubctl.Hub):
         super().__init__(path, False)
 
     def __stdout(self, prefix: str = "Current", port_filter: int = None):
-        stdout = [
-            f"{prefix} status for hub {self.path} [0424:9512, USB 2.00, {self.num_ports} ports, ppps]".encode()
-        ]
+        stdout = [f"{prefix} status for hub {self.path} [0424:9512, USB 2.00, {self.num_ports} ports, ppps]".encode()]
 
         for idx in range(self.num_ports):
             if port_filter is not None and idx + 1 != int(port_filter):
