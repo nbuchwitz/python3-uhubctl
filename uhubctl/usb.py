@@ -2,7 +2,7 @@
 import re
 from typing import List, Optional
 
-from .utils import _uhubctl
+from .utils import UHubCtl
 
 
 def discover_hubs() -> List["Hub"]:
@@ -17,7 +17,7 @@ def discover_hubs() -> List["Hub"]:
 
     pattern = re.compile(r"Current status for hub ([\.\d-]+)")
 
-    for line in _uhubctl():
+    for line in UHubCtl.exec():
         regex = pattern.match(line)
 
         if regex:
@@ -96,7 +96,7 @@ class Hub:
         """
         pattern = re.compile(r"  Port (\d+): \d{4} ")
 
-        for line in _uhubctl(["-l", self.path]):
+        for line in UHubCtl.exec(["-l", self.path]):
             regex = pattern.match(line)
 
             if regex:
@@ -133,7 +133,7 @@ class Port:
         pattern = re.compile(rf"  Port {self.port_number}: \d{{4}} (power|off|indicator)")
 
         args = ["-l", self.hub.path, "-p", str(self.port_number)]
-        for line in _uhubctl(args):
+        for line in UHubCtl.exec(args):
             reg = pattern.match(line)
 
             if reg:
@@ -153,7 +153,7 @@ class Port:
         else:
             args.append("off")
 
-        _uhubctl(args)
+        UHubCtl.exec(args)
 
     @staticmethod
     def from_path(path: str):

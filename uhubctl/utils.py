@@ -1,25 +1,45 @@
 """Utilities around uhubctl binary"""
 import subprocess
 
+from packaging import version
+
 UHUBCTL_BINARY = "uhubctl"
 
 
-def _uhubctl(args: list = None) -> list:
-    cmd = UHUBCTL_BINARY.split(" ")
-    cmd.append("-N")
+class UHubCtl:
+    _version = None
 
-    if args is not None:
-        cmd += args
+    @classmethod
+    def version(cls) -> str:
+        if cls._version is None:
+            cmd = UHUBCTL_BINARY.split(" ")
+            cmd.append("-v")
 
-    try:
-        result = subprocess.run(cmd, capture_output=True, check=True)
-        stdout = result.stdout.decode()
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
 
-        return stdout.split("\n")
-    except subprocess.CalledProcessError as exc:
-        stderr = exc.stderr.decode()
+            cls._version = result.stdout.split("-", maxsplit=1)[0]
 
-        if stderr.startswith("No compatible devices detected"):
-            return []
+        return cls._version
 
-        raise Exception(f"uhubctl failed: {stderr}") from exc
+    @classmethod
+    def exec(cls, args: list = None) -> list:
+        cmd = UHUBCTL_BINARY.split(" ")
+
+        if version.parse(cls.version()) > version.parse("2.3.0"):
+            cmd.append("-N")
+
+        if args is not None:
+            cmd += args
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, check=True)
+            stdout = result.stdout.decode()
+
+            return stdout.split("\n")
+        except subprocess.CalledProcessError as exc:
+            stderr = exc.stderr.decode()
+
+            if stderr.startswith("No compatible devices detected"):
+                return []
+
+            raise Exception(f"uhubctl failed: {stderr}") from exc
