@@ -132,7 +132,7 @@ class Port:
         status = None
         pattern = re.compile(rf"  Port {self.port_number}: \d{{4}} (power|off|indicator)")
 
-        args = ["-l", self.hub.path, "-p", str(self.port_number)]
+        args = ["-e", "-l", self.hub.path, "-p", str(self.port_number)]
         for line in UHubCtl.exec(args):
             reg = pattern.match(line)
 
@@ -146,7 +146,7 @@ class Port:
 
     @status.setter
     def status(self, status: bool) -> None:
-        args = ["-l", self.hub.path, "-p", str(self.port_number), "-a"]
+        args = ["-e", "-l", self.hub.path, "-p", str(self.port_number), "-a"]
 
         if status:
             args.append("on")
