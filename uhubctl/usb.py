@@ -157,5 +157,23 @@ class Port:
 
         _uhubctl(args)
 
+    @staticmethod
+    def from_path(path: str):
+        """
+        Create new port instance from USB path
+
+        Arguments:
+            path: USB path
+
+        Returns:
+            Port
+        """
+        hub_path, port_id = path.rsplit(".", maxsplit=1)
+
+        hub = Hub(hub_path, enumerate_ports=False)
+        port = hub.add_port(port_id)
+
+        return port
+
     def __str__(self) -> str:
         return f"USB Port {self.hub.path}.{self.port_number}"

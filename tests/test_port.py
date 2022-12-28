@@ -50,3 +50,14 @@ def test_port_status(mock_hub: MockHub, fp: pytest_subprocess.FakeProcess):
 
         mock_hub.cmd(fp, port.port_number)
         assert port.status is False
+
+
+def test_port_from_path():
+    mock_data = [("1", 2), ("2-1", 1), ("1-2.3.1", 5)]
+    for element in mock_data:
+        path, port_number = element
+
+        port = Port.from_path(f"{path}.{port_number}")
+
+        assert port.hub.path == path
+        assert port.port_number == port_number
