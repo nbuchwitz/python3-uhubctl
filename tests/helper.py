@@ -70,6 +70,7 @@ class MockHub(uhubctl.Hub):
             stdout += self.__stdout("New", port_filter=port_number)
 
         fp.register(cmd, stdout=stdout)
+        fp.register(["uhubctl", "-v"], stdout="2.4.0-43-ge1e4d450")
 
 
 @pytest.fixture
