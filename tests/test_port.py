@@ -41,6 +41,9 @@ def test_wrong_or_missing_parameter(demo_hub: Hub):
 
 
 def test_port_status(mock_hub: MockHub, fp: pytest_subprocess.FakeProcess):
+    mock_hub.cmd(fp, n_arg=False)
+    mock_hub.discover_ports()
+
     for port in mock_hub.ports:
         mock_hub.cmd(fp, port.port_number)
         assert port.status is True
