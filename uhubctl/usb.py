@@ -112,7 +112,9 @@ class Port:
     USB port representation from uhubctl
     """
 
-    PORT_PATTERN = re.compile(r"  Port (?P<port>\d): \d{4} (?P<status>[a-z ]+)\w?(\[(?:(?P<vid>[a-f0-9]{4}):(?P<pid>[a-f0-9]{4})(?P<description>.*)?)\])?")
+    PORT_PATTERN = re.compile(
+        r"  Port (?P<port>\d): \d{4} (?P<status>[a-z ]+)\s?(\[(?:(?P<vid>[a-f0-9]{4}):(?P<pid>[a-f0-9]{4})\s?(?P<description>.*)?)\])?"
+    )
 
     def __init__(self, hub: Hub, port_number: int):
         """
@@ -125,6 +127,7 @@ class Port:
         """
         self.hub = hub
         self.port_number = int(port_number)
+        self.__cache = None
 
     @property
     def status(self) -> bool:
@@ -158,25 +161,75 @@ class Port:
 
         UHubCtl.exec(args)
 
-    @property
-    def name(self) -> str:
+    def __attribute(self, name: str, cache: bool = True, result_filter: callable = None) -> str:
         """
-        Attached device name
+        Get attribute from regexp parsed status string
         """
 
-        args = ["-l", self.hub.path, "-p", str(self.port_number)]
-        for line in UHubCtl.exec(args):
+        if name not in ("port", "status", "vid", "pid", "description"):
+            raise AttributeError(name)
+
+        # use cache for port details if possible (fetching is slow)
+        if cache and self.__cache is not None:
+            lines = [self.__cache]
+        else:
+            args = ["-l", self.hub.path, "-p", str(self.port_number)]
+            lines = UHubCtl.exec(args, description=True)
+
+        for line in lines:
             reg = self.PORT_PATTERN.match(line)
 
-            print(line)
-
             if reg:
-                if reg.group("port") != self.port_number:
+                if int(reg.group("port")) != self.port_number:
                     continue
 
-                return reg.group("description")
+                self.__cache = line
 
-        # raise Exception("could not determine name")
+                if callable(result_filter):
+                    return result_filter(reg.group(name))
+                else:
+                    return reg.group(name)
+
+        return None
+
+    def description(self, cached_results=True) -> str:
+        """
+        Attached device description
+
+        Arguments:
+            cached_results (bool): Use cached results instead of querying every time
+
+        Return:
+            Device description of the attached device
+        """
+
+        return self.__attribute("description", cached_results)
+
+    def vendor_id(self, cached_results=True) -> int:
+        """
+        Attached device USB vendor id
+
+        Arguments:
+            cached_results (bool): Use cached results instead of querying every time
+
+        Return:
+            USB vendor id of the attached device
+        """
+
+        return self.__attribute("vid", cached_results, lambda x: int(x, 16) if x is not None else None)
+
+    def product_id(self, cached_results=True) -> int:
+        """
+        Attached device USB product id
+
+        Arguments:
+            cached_results (bool): Use cached results instead of querying every time
+
+        Return:
+            USB product id of the attached device
+        """
+
+        return self.__attribute("pid", cached_results, lambda x: int(x, 16) if x is not None else None)
 
     @staticmethod
     def from_path(path: str):
