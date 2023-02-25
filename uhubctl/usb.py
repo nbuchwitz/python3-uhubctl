@@ -96,11 +96,12 @@ class Hub:
         """
         pattern = re.compile(r"  Port (\d+): \d{4} ")
 
-        for line in UHubCtl.exec(["-l", self.path]):
+        for line in UHubCtl.exec(["-l", self.path], description=True):
             regex = pattern.match(line)
 
             if regex:
-                port = Port(self, regex.group(1))
+                # create Port object and pre-populate cache with line from autodiscovery
+                port = Port(self, regex.group(1), cache=line)
                 self.ports.append(port)
 
     def __str__(self) -> str:
@@ -116,7 +117,7 @@ class Port:
         r"  Port (?P<port>\d): \d{4} (?P<status>[a-z ]+)\s?(\[(?:(?P<vid>[a-f0-9]{4}):(?P<pid>[a-f0-9]{4})\s?(?P<description>.*)?)\])?"
     )
 
-    def __init__(self, hub: Hub, port_number: int):
+    def __init__(self, hub: Hub, port_number: int, cache: str = None):
         """
         Create new port instance
 
@@ -127,7 +128,7 @@ class Port:
         """
         self.hub = hub
         self.port_number = int(port_number)
-        self.__cache = None
+        self._cache = cache
 
     @property
     def status(self) -> bool:
@@ -170,8 +171,8 @@ class Port:
             raise AttributeError(name)
 
         # use cache for port details if possible (fetching is slow)
-        if cache and self.__cache is not None:
-            lines = [self.__cache]
+        if cache and self._cache is not None:
+            lines = [self._cache]
         else:
             args = ["-l", self.hub.path, "-p", str(self.port_number)]
             lines = UHubCtl.exec(args, description=True)
@@ -183,7 +184,7 @@ class Port:
                 if int(reg.group("port")) != self.port_number:
                     continue
 
-                self.__cache = line
+                self._cache = line
 
                 if callable(result_filter):
                     return result_filter(reg.group(name))

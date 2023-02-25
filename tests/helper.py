@@ -65,15 +65,15 @@ class MockHub(uhubctl.Hub):
         fp.register(["uhubctl", "-l", self.path, "-p", str(port_number)], stdout=stdout)
 
     def cmd(
-        self,
-        fp: pytest_subprocess.FakeProcess,
-        port_number: int = None,
-        new_status: bool = None,
+        self, fp: pytest_subprocess.FakeProcess, port_number: int = None, new_status: bool = None, n_arg: bool = True
     ) -> None:
         if port_number is not None:
             assert port_number <= self.num_ports
 
-        cmd = ["uhubctl", "-N", "-l", str(self.path)]
+        cmd = ["uhubctl"]
+        if n_arg:
+            cmd.append("-N")
+        cmd += ["-l", str(self.path)]
         stdout = self.__stdout(port_filter=port_number)
 
         if port_number is not None:
