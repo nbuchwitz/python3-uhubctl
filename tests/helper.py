@@ -45,6 +45,25 @@ class MockHub(uhubctl.Hub):
 
         return self.__status(self.status[port_number])
 
+    def register_port_details(
+        self,
+        fp: pytest_subprocess.FakeProcess,
+        port_number: int = None,
+        vendor_id: int = None,
+        product_id: int = None,
+        description: str = None,
+    ):
+        stdout = f"  Port {port_number}: 0103 power enable connect"
+        if vendor_id is not None and product_id is not None:
+            stdout += f" [{vendor_id:04x}:{product_id:04x}"
+
+            if description is not None:
+                stdout += f" {description}"
+
+            stdout += "]"
+
+        fp.register(["uhubctl", "-l", self.path, "-p", str(port_number)], stdout=stdout)
+
     def cmd(
         self,
         fp: pytest_subprocess.FakeProcess,
