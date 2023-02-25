@@ -112,6 +112,8 @@ class Port:
     USB port representation from uhubctl
     """
 
+    PORT_PATTERN = re.compile(r"  Port (?P<port>\d): \d{4} (?P<status>[a-z ]+)\w?(\[(?:(?P<vid>[a-f0-9]{4}):(?P<pid>[a-f0-9]{4})(?P<description>.*)?)\])?")
+
     def __init__(self, hub: Hub, port_number: int):
         """
         Create new port instance
@@ -130,14 +132,15 @@ class Port:
         Port power status
         """
         status = None
-        pattern = re.compile(rf"  Port {self.port_number}: \d{{4}} (power|off|indicator)")
 
         args = ["-l", self.hub.path, "-p", str(self.port_number)]
         for line in UHubCtl.exec(args):
-            reg = pattern.match(line)
+            reg = self.PORT_PATTERN.match(line)
 
             if reg:
-                status = reg.group(1) == "power"
+                if reg.group("port") != self.port_number:
+                    continue
+                status = "power" in reg.group("status")
 
         if status is None:
             raise Exception()
@@ -154,6 +157,26 @@ class Port:
             args.append("off")
 
         UHubCtl.exec(args)
+
+    @property
+    def name(self) -> str:
+        """
+        Attached device name
+        """
+
+        args = ["-l", self.hub.path, "-p", str(self.port_number)]
+        for line in UHubCtl.exec(args):
+            reg = self.PORT_PATTERN.match(line)
+
+            print(line)
+
+            if reg:
+                if reg.group("port") != self.port_number:
+                    continue
+
+                return reg.group("description")
+
+        # raise Exception("could not determine name")
 
     @staticmethod
     def from_path(path: str):
