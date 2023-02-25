@@ -142,7 +142,7 @@ class Port:
             reg = self.PORT_PATTERN.match(line)
 
             if reg:
-                if reg.group("port") != self.port_number:
+                if int(reg.group("port")) != self.port_number:
                     continue
                 status = "power" in reg.group("status")
 

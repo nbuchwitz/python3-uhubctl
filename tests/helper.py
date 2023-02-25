@@ -37,8 +37,8 @@ class MockHub(uhubctl.Hub):
     def __status(self, status: bool):
         if status:
             return "power"
-        else:
-            return "off"
+
+        return "off"
 
     def __power_status(self, port_number: int):
         assert port_number <= self.num_ports
@@ -80,13 +80,13 @@ class MockHub(uhubctl.Hub):
             cmd += ["-p", str(port_number)]
 
         if new_status is not None:
-            self.status[port_number] = new_status
+            self.status[port_number - 1] = new_status
 
             cmd.append("-a")
             cmd.append(self.__status(new_status))
 
             stdout.append("Sent power on request".encode())
-            stdout += self.__stdout("New", port_filter=port_number)
+            stdout += self.__stdout("New", port_filter=port_number - 1)
 
         fp.register(cmd, stdout=stdout)
         fp.register(["uhubctl", "-v"], stdout="2.4.0-43-ge1e4d450")
