@@ -61,3 +61,26 @@ def test_port_from_path():
 
         assert port.hub.path == path
         assert port.port_number == port_number
+
+
+def test_device_data(mock_hub: MockHub, fp: pytest_subprocess.FakeProcess):
+    port_number = 1
+    vendor_id = 0xDEAD
+    product_id = 0xBEEF
+    description = "Some fancy USB device"
+
+    port = Port(mock_hub, port_number)
+
+    mock_hub.register_port_details(fp, port_number)
+    assert port.description(cached_results=False) is None
+
+    mock_hub.register_port_details(fp, port_number)
+    assert port.vendor_id(cached_results=False) is None
+
+    mock_hub.register_port_details(fp, port_number)
+    assert port.product_id(cached_results=False) is None
+
+    mock_hub.register_port_details(fp, port_number, vendor_id, product_id, description)
+    assert port.description(cached_results=False) == description
+    assert port.vendor_id(cached_results=True) == vendor_id
+    assert port.product_id(cached_results=True) == product_id
