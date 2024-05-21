@@ -25,7 +25,7 @@ class UHubCtl:
     def exec(cls, args: list = None, description: bool = False) -> list:
         cmd = UHUBCTL_BINARY.split(" ")
 
-        if not description and version.parse(cls.version()) > version.parse("2.3.0"):
+        if not description and version.parse(cls.version()) >= version.parse("2.5.0"):
             cmd.append("-N")
 
         if args is not None:
