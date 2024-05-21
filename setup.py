@@ -17,7 +17,5 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    project_urls={
-        "Bug Tracker": "https://github.com/nbuchwitz/python3-uhubctl/issues"
-    },
+    project_urls={"Bug Tracker": "https://github.com/nbuchwitz/python3-uhubctl/issues"},
 )

@@ -1,4 +1,5 @@
 """Representation classes and helper functions"""
+
 import re
 from typing import List, Optional
 
