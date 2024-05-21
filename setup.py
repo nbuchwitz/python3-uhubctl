@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="uhubctl",
-    version="0.1.2",
+    version="0.2.0",
     author="Nicolai Buchwitz",
     author_email="nb@tipi-net.de",
     description="A basic Python wrapper for uhubctl",
