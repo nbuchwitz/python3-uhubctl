@@ -3,4 +3,6 @@ line-length = 120
 include = '\.pyi?$'
 
 [build-system]
-requires = ["setuptools<64", "wheel"]
+requires = ["setuptools<64; python_version < '3.12'",
+            "setuptools>=64; python_version >= '3.12'",
+            "wheel"]
